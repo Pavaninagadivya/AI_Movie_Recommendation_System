@@ -25,13 +25,19 @@ movies = movies[['id',
 
 # Merge datasets
 
-movies = movies.merge(credits, on='title')
+movies = movies.merge(
+    credits,
+    left_on='id',
+    right_on='movie_id',
+    suffixes=('', '_credits')
+)
 
 print("Merged Shape:", movies.shape)
 
 # ==========================
 # Handle missing values
 # ==========================
+
 movies = movies[['movie_id',
                  'title',
                  'overview',
@@ -41,6 +47,7 @@ movies = movies[['movie_id',
                  'crew',
                  'vote_average',
                  'release_date']]
+
 movies.dropna(inplace=True)
 
 print("Null Values:")
