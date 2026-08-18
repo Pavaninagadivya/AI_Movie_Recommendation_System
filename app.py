@@ -10,41 +10,112 @@ similarity = pickle.load(open("similarity.pkl", "rb"))
 # ==========================
 # Recommendation Function
 # ==========================
+# ==========================
+# Improved Recommendation Function
+# ==========================
+
 def recommend(movie, genre):
 
-    movie_index = movies[movies["title"] == movie].index[0]
+    # Find selected movie
+    matches = movies[movies["title"] == movie]
 
+    if matches.empty:
+        return []
+
+    movie_index = matches.index[0]
+
+    # Get similarity scores
     distances = similarity[movie_index]
 
-    movies_list = sorted(
-        list(enumerate(distances)),
+    # Create movie-score pairs
+    movie_scores = list(enumerate(distances))
+
+    # Sort by similarity
+    movie_scores = sorted(
+        movie_scores,
         reverse=True,
         key=lambda x: x[1]
     )
 
     recommended_movies = []
 
-    for i in movies_list:
+    # Normalize selected genre
+    selected_genre = (
+        genre.lower()
+        .replace("-", "")
+        .replace(" ", "")
+    )
 
-        movie_data = movies.iloc[i[0]]
+    # First preference: movies matching genre
+    for i, similarity_score in movie_scores:
 
+        movie_data = movies.iloc[i]
+
+        title = movie_data["title"]
+
+        # Don't recommend the selected movie
+        if title == movie:
+            continue
+
+        # Get genres
         movie_genres = movie_data["genres"]
 
-        if genre.replace("-", "").replace(" ", "") in movie_genres:
+        # Convert genre list into normalized text
+        normalized_genres = [
+            str(g).lower()
+            .replace("-", "")
+            .replace(" ", "")
+            for g in movie_genres
+        ]
 
-            if movie_data["title"] != movie:
-                recommended_movies.append({
+        # Check genre match
+        genre_match = selected_genre in normalized_genres
 
-    "title": movie_data["title"],
+        if genre_match:
 
-    "rating": movie_data["vote_average"],
-
-    "year": str(movie_data["release_date"])[:4]
-
-})
+            recommended_movies.append({
+                "title": title,
+                "rating": round(float(movie_data["vote_average"]), 1),
+                "year": str(movie_data["release_date"])[:4],
+                "similarity": round(float(similarity_score) * 100, 1),
+                "genres": movie_data["genres"]
+            })
 
         if len(recommended_movies) == 5:
             break
+
+    # ==========================
+    # Fallback Recommendation
+    # ==========================
+
+    if len(recommended_movies) < 5:
+
+        already_added = {
+            movie["title"] for movie in recommended_movies
+        }
+
+        for i, similarity_score in movie_scores:
+
+            movie_data = movies.iloc[i]
+
+            title = movie_data["title"]
+
+            if title == movie:
+                continue
+
+            if title in already_added:
+                continue
+
+            recommended_movies.append({
+                "title": title,
+                "rating": round(float(movie_data["vote_average"]), 1),
+                "year": str(movie_data["release_date"])[:4],
+                "similarity": round(float(similarity_score) * 100, 1),
+                "genres": movie_data["genres"]
+            })
+
+            if len(recommended_movies) == 5:
+                break
 
     return recommended_movies
 
@@ -209,7 +280,9 @@ st.sidebar.success("Profile Saved")
 # ==========================
 # Main Title
 # ==========================
-st.title("🎬 AI Movie Recommendation System")
+# ==========================
+# Main Content
+# ==========================
 
 st.markdown(
 """
@@ -261,22 +334,15 @@ if st.button("🎬 Recommend Movies"):
                 with col1:
                     st.info(
     f"""
-🎬 {movie['title']}
+🎬 **{movie['title']}**
 
-⭐ IMDb Rating : {movie['rating']}
+⭐ IMDb Rating : **{movie['rating']}**
 
-📅 Year : {movie['year']}
-"""
-)
-            else:
-                with col2:
-                    st.info(
-    f"""
-🎬 {movie['title']}
+📅 Year : **{movie['year']}**
 
-⭐ IMDb Rating : {movie['rating']}
+🎭 Genre : **{', '.join(movie['genres'])}**
 
-📅 Year : {movie['year']}
+🤖 AI Similarity : **{movie['similarity']}%**
 """
 )
 
