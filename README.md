@@ -1,6 +1,6 @@
 # 🎬 AI Movie Recommendation System
 
-An AI-powered Movie Recommendation System built using Python, Machine Learning, and Streamlit. The system recommends movies based on content similarity using genres, keywords, cast, director, and movie overview.
+An AI-powered Movie Recommendation System built using Python, Machine Learning, and Streamlit. The system recommends movies based on content similarity using genres, keywords, cast, director, and movie overview. It also provides genre recommendations based on the user's age and mood.
 
 ## 🚀 Features
 
@@ -8,9 +8,35 @@ An AI-powered Movie Recommendation System built using Python, Machine Learning, 
 - Genre-Based Filtering
 - Mood-Based Recommendation
 - Age-Based Recommendation
+- AI Similarity Score
 - IMDb Rating Display
 - Release Year Display
 - Interactive Streamlit User Interface
+- Fallback Recommendations
+
+---
+
+## 🧠 Recommendation Technique
+
+The system uses **Content-Based Filtering** to recommend similar movies.
+
+Movie information such as:
+
+- Movie Overview
+- Genres
+- Keywords
+- Cast
+- Director
+
+is combined to create movie tags.
+
+The tags are processed using:
+
+- Porter Stemmer
+- CountVectorizer
+- Cosine Similarity
+
+The system also uses the user's **age and current mood** to select a suitable movie genre.
 
 ---
 
@@ -30,96 +56,3 @@ An AI-powered Movie Recommendation System built using Python, Machine Learning, 
 This project uses the **TMDB 5000 Movie Dataset**.
 
 Download the following files and place them inside a folder named **data**:
-
-```
-data/
-│── tmdb_5000_movies.csv
-│── tmdb_5000_credits.csv
-```
-
----
-
-## 📦 About the Pickle Files
-
-The files below are **not included** in this repository because they are generated automatically.
-
-```
-movies.pkl
-similarity.pkl
-```
-
-Generate them by running:
-
-```bash
-python recommendation.py
-```
-
-This creates:
-
-- movies.pkl
-- similarity.pkl
-
-These files are required before running the Streamlit application.
-
----
-
-## ▶️ Run the Project
-
-### 1. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Generate Model Files
-
-```bash
-python recommendation.py
-```
-
-### 3. Start the Application
-
-```bash
-streamlit run app.py
-```
-
----
-
-## 📁 Project Structure
-
-```
-AI_Movie_Recommendation_System/
-│
-├── app.py
-├── recommendation.py
-├── requirements.txt
-├── README.md
-│
-├── data/
-│   ├── tmdb_5000_movies.csv
-│   └── tmdb_5000_credits.csv
-│
-├── movies.pkl        (Generated Automatically)
-└── similarity.pkl    (Generated Automatically)
-```
-
----
-
-## 🔮 Future Improvements
-
-- Movie Posters
-- Movie Trailer Button
-- User Login & Signup
-- Favorite Movies
-- Watchlist
-- Personalized Recommendations
-- Top Rated Movies
-- Trending Movies
-
----
-
-## 👩‍💻 Author
-
-**Pavani Naga Divya**
-
-Built as a Machine Learning and Streamlit project for learning, portfolio development, and placement preparation.
